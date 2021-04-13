@@ -4,6 +4,7 @@ namespace Validator;
 
 use Validator\Validators\StringValidator;
 use Validator\Validators\NumberValidator;
+use Validator\Validators\ArrayValidator;
 
 class Validator
 {
@@ -15,5 +16,10 @@ class Validator
     public function number(): NumberValidator
     {
         return new NumberValidator();
+    }
+
+    public function array(): ArrayValidator
+    {
+        return new ArrayValidator();
     }
 }
