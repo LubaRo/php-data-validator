@@ -8,7 +8,7 @@ class NumberValidator extends AValidator
     {
         parent::__construct($rules, $customRules);
 
-        $this->rules[] = fn(mixed $data) => is_numeric($data) || is_null($data);
+        $this->rules[] = fn(mixed $data) => (is_numeric($data) && $data != 0) || is_null($data);
     }
 
     public function required(): self
