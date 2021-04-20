@@ -46,7 +46,7 @@ class NumberValidatorTest extends TestCase
         $this->assertTrue($schema->isValid(43.232), 'Float positive value is valid');
         $this->assertTrue($schema->isValid(0), 'Zero value is valid');
 
-        $this->assertFalse($schema->isValid(null), 'NULL is not valid');
+        $this->assertTrue($schema->isValid(null), 'NULL is valid');
         $this->assertFalse($schema->isValid(-32), 'Negative int is not valid');
         $this->assertFalse($schema->isValid(-423.12), 'Negative float is not valid');
     }
@@ -74,6 +74,7 @@ class NumberValidatorTest extends TestCase
         $numValidator = $v->number();
         $schema = $numValidator->required()->range(-35, 40)->positive();
 
+        $this->assertTrue($v->number()->positive()->isValid(null));
         $this->assertFalse($schema->isValid(null), 'Number must exists');
         $this->assertFalse($schema->isValid(-20), 'Number must be positive');
         $this->assertFalse($schema->isValid(46), 'Number out of the range');
