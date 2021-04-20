@@ -10,7 +10,7 @@ class StringValidator extends AValidator
     {
         parent::__construct($rules, $customRules);
 
-        $this->rules[] = fn(mixed $data) => is_string($data) || is_null($data);
+        $this->rules[] = fn(mixed $data) => is_string($data);
     }
 
     public function required(): self
