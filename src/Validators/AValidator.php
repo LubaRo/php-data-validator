@@ -17,6 +17,11 @@ abstract class AValidator implements ValidatorInreface
     {
         $result = true;
 
+        $basicChecker = static::basicCheck();
+        if (!$basicChecker($data)) {
+            return false;
+        }
+
         foreach ($this->rules as $rule) {
             if ($rule($data) === false) {
                 $result = false;

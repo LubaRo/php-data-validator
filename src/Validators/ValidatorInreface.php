@@ -11,4 +11,6 @@ interface ValidatorInreface
     public function addRule(callable $rule): static;
 
     public function test(string $methodName, mixed ...$params): static;
+
+    public function basicCheck(): callable;
 }

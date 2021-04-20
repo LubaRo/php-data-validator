@@ -4,11 +4,9 @@ namespace Hexlet\Validator\Validators;
 
 class ArrayValidator extends AValidator
 {
-    public function __construct(array $rules = [], array $customRules = [])
+    public function basicCheck(): callable
     {
-        parent::__construct($rules, $customRules);
-
-        $this->rules[] = fn(mixed $data) => is_array($data) || is_null($data);
+        return fn(mixed $data) => is_array($data) || is_null($data);
     }
 
     public function required(): self
@@ -34,7 +32,7 @@ class ArrayValidator extends AValidator
 
     protected function getShapeChecker(array $shape): callable
     {
-        return function ($data) use ($shape) {
+        return function ($data) use ($shape): bool {
             $result = true;
 
             foreach ($shape as $key => $schema) {

@@ -6,11 +6,9 @@ use function Symfony\Component\String\u;
 
 class StringValidator extends AValidator
 {
-    public function __construct(array $rules = [], array $customRules = [])
+    public function basicCheck(): callable
     {
-        parent::__construct($rules, $customRules);
-
-        $this->rules[] = fn(mixed $data) => is_string($data);
+        return fn(mixed $data) => is_string($data);
     }
 
     public function required(): self
