@@ -24,8 +24,7 @@ class ArrayValidatorTest extends TestCase
     {
         $v = new Validator();
 
-        $schema = $v->array();
-        $schema->required();
+        $schema = $v->array()->required();
 
         $this->assertFalse($schema->isValid(null), 'Null value is not valid');
 
@@ -38,8 +37,7 @@ class ArrayValidatorTest extends TestCase
     {
         $v = new Validator();
 
-        $schema = $v->array();
-        $schema->sizeof(4);
+        $schema = $v->array()->sizeof(4);
 
         $this->assertTrue(
             $schema->isValid(['x' => 1, 'y' => 3, 'a' => 'afd', 'some' => 'qwerty']),
@@ -54,6 +52,22 @@ class ArrayValidatorTest extends TestCase
         $this->assertFalse($schema->isValid([]), 'Empty array is not valid');
         $this->assertFalse($schema->isValid([1, 5, 514, 'fasfd', 544]), 'The number of elements is greater');
         $this->assertFalse($schema->isValid(['a' => 'only one']), 'The number of elements is less');
+    }
 
+    public function testMultipleRules(): void
+    {
+        $v = new Validator();
+
+        $schema = $v->array();
+
+        $ruleSet1 = $schema->required()->sizeof(5);
+
+        $this->assertTrue($ruleSet1->isValid(['a', 1, 378, [], 'qwerty']));
+        $this->assertFalse($ruleSet1->isValid(null));
+        $this->assertFalse($ruleSet1->isValid([1, 2]));
+        $this->assertFalse($ruleSet1->isValid([1, 2, 3, 4, 5, 6]));
+
+        $this->assertTrue($schema->sizeof(2)->isValid(['a', 'b']));
+        $this->assertTrue($schema->isValid([13]));
     }
 }

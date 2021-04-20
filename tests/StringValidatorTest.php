@@ -26,8 +26,7 @@ class StringValidatorTest extends TestCase
     {
         $v = new Validator();
 
-        $schema = $v->string();
-        $schema->required();
+        $schema = $v->string()->required();
 
         $this->assertFalse($schema->isValid(''), 'Empty string check');
         $this->assertTrue($schema->isValid('h'), 'Single char check');
@@ -38,8 +37,7 @@ class StringValidatorTest extends TestCase
     {
         $v = new Validator();
 
-        $schema = $v->string();
-        $schema->minLength(5);
+        $schema = $v->string()->minLength(5);
 
         $this->assertFalse($schema->isValid(''), 'Empty string check');
         $this->assertFalse($schema->isValid('abcd'), 'Length is shorter than needed');
@@ -54,8 +52,7 @@ class StringValidatorTest extends TestCase
     {
         $v = new Validator();
 
-        $schema = $v->string();
-        $schema->contains('some');
+        $schema = $v->string()->contains('some');
 
         $this->assertTrue($schema->isValid('The some string'), 'Contains check');
         $this->assertFalse($schema->isValid(''), 'Empty string check');
@@ -66,11 +63,10 @@ class StringValidatorTest extends TestCase
     {
         $v = new Validator();
 
-        $schema = $v->string();
-
-        $schema->minLength(3);
-        $schema->required();
-        $schema->contains('ze');
+        $schema = $v->string()
+            ->minLength(3)
+            ->required()
+            ->contains('ze');
 
         $this->assertFalse($schema->isValid('ze'), 'Not enough length');
         $this->assertFalse($schema->isValid('a'), 'Not enough length');

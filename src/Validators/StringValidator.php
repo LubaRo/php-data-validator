@@ -4,40 +4,33 @@ namespace Validator\Validators;
 
 use function Symfony\Component\String\u;
 
-class StringValidator
+class StringValidator extends AValidator
 {
-    private array $rules = [];
-
-    public function __construct()
+    public function __construct(array $rules = [])
     {
+        parent::__construct($rules);
+
         $this->rules[] = fn(mixed $data) => is_string($data);
     }
 
-    public function isValid(mixed $data): bool
+    public function required(): self
     {
-        $result = true;
+        $rule = fn(string $str) => !u($str)->isEmpty();
 
-        foreach ($this->rules as $rule) {
-            if ($rule($data) === false) {
-                $result = false;
-                break;
-            }
-        }
-        return $result;
+        return $this->addRule($rule);
     }
 
-    public function required(): void
+    public function minLength(int $minLength): self
     {
-        $this->rules[] = fn(string $str) => !u($str)->isEmpty();
+        $rule = fn(string $str) => strlen($str) >= $minLength;
+
+        return $this->addRule($rule);
     }
 
-    public function minLength(int $minLength): void
+    public function contains(string $substr): self
     {
-        $this->rules[] = fn(string $str) => strlen($str) >= $minLength;
-    }
+        $rule = fn(string $str) => u($str)->containsAny($substr);
 
-    public function contains(string $substr): void
-    {
-        $this->rules[] = fn(string $str) => u($str)->containsAny($substr);
+        return $this->addRule($rule);
     }
 }

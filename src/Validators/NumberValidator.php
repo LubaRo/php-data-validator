@@ -2,40 +2,33 @@
 
 namespace Validator\Validators;
 
-class NumberValidator
+class NumberValidator extends AValidator
 {
-    private array $rules = [];
-
-    public function __construct()
+    public function __construct(array $rules = [])
     {
+        parent::__construct($rules);
+
         $this->rules[] = fn(mixed $data) => is_numeric($data) || is_null($data);
     }
 
-    public function isValid(mixed $data): bool
+    public function required(): self
     {
-        $result = true;
+        $rule = fn($num) => !is_null($num);
 
-        foreach ($this->rules as $rule) {
-            if ($rule($data) === false) {
-                $result = false;
-                break;
-            }
-        }
-        return $result;
+        return $this->addRule($rule);
     }
 
-    public function required(): void
+    public function positive(): self
     {
-        $this->rules[] = fn($num) => !is_null($num);
+        $rule = fn($num) => !is_null($num) && $num >= 0;
+
+        return $this->addRule($rule);
     }
 
-    public function positive(): void
+    public function range(int|float $min, int|float $max): self
     {
-        $this->rules[] = fn($num) => !is_null($num) && $num >= 0;
-    }
+        $rule = fn($num) => !is_null($num) && $num >= $min && $num <= $max;
 
-    public function range(int|float $min, int|float $max): void
-    {
-        $this->rules[] = fn($num) => !is_null($num) && $num >= $min && $num <= $max;
+        return $this->addRule($rule);
     }
 }

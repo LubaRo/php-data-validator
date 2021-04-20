@@ -2,35 +2,26 @@
 
 namespace Validator\Validators;
 
-class ArrayValidator
+class ArrayValidator extends AValidator
 {
-    private array $rules = [];
-
-    public function __construct()
+    public function __construct(array $rules = [])
     {
+        parent::__construct($rules);
+
         $this->rules[] = fn(mixed $data) => is_array($data) || is_null($data);
     }
 
-    public function isValid(mixed $data): bool
+    public function required(): self
     {
-        $result = true;
+        $rule = fn($arr) => !is_null($arr);
 
-        foreach ($this->rules as $rule) {
-            if ($rule($data) === false) {
-                $result = false;
-                break;
-            }
-        }
-        return $result;
+        return $this->addRule($rule);
     }
 
-    public function required(): void
+    public function sizeof(int $size): self
     {
-        $this->rules[] = fn($arr) => !is_null($arr);
-    }
+        $rule = fn($arr) => !is_null($arr) && sizeof($arr) === $size;
 
-    public function sizeof(int $size): void
-    {
-        $this->rules[] = fn($arr) => !is_null($arr) && sizeof($arr) === $size;
+        return $this->addRule($rule);
     }
 }
