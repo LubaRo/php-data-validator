@@ -12,10 +12,10 @@ class StringValidatorTest extends TestCase
         $v = new Validator();
         $schema = $v->string();
 
+        $this->assertTrue($schema->isValid(null), 'NULL value is valid');
         $this->assertTrue($schema->isValid(''), 'Empty string check');
         $this->assertTrue($schema->isValid('qwerty'), 'Ordinary string check');
 
-        $this->assertFalse($schema->isValid(null), 'NULL value check');
         $this->assertFalse($schema->isValid(455), 'Number type value check');
 
         $this->assertTrue($schema->isValid('445'), 'String with number check');

@@ -12,12 +12,12 @@ class NumberValidatorTest extends TestCase
         $v = new Validator();
         $schema = $v->number();
 
+        $this->assertTrue($schema->isValid(null), 'NULL value is valid');
         $this->assertFalse($schema->isValid(''), 'String is not a number');
         $this->assertFalse($schema->isValid('4kl'), 'String is not a number');
 
         $this->assertTrue($schema->isValid('543'), 'String with number is valid');
         $this->assertTrue($schema->isValid('54.3'), 'String with float is valid');
-        $this->assertTrue($schema->isValid(null), 'String with number is valid');
 
         $this->assertTrue($schema->isValid(543), 'Integer is valid');
         $this->assertTrue($schema->isValid(34.12), 'Float is valid');
