@@ -30,6 +30,7 @@ abstract class AValidator implements ValidatorInreface
     {
         $ruleSet = $this->getRules();
         $ruleSet[] = $rule;
+        $this->rules = $ruleSet;
 
         return new static($ruleSet, $this->getCustomRules());
     }
