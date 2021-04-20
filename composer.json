@@ -11,8 +11,8 @@
     ],
     "autoload": {
         "psr-4": {
-            "Validator\\": "src",
-            "Validator\\Tests\\": "tests"
+            "Hexlet\\Validator\\": "src",
+            "Hexlet\\Validator\\Validator\\Tests\\": "tests"
         }
     },
     "require": {

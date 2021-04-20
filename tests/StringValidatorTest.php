@@ -3,7 +3,7 @@
 namespace Validator\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Validator\Validator;
+use Hexlet\Validator\Validator;
 
 class StringValidatorTest extends TestCase
 {

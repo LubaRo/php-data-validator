@@ -1,6 +1,6 @@
 <?php
 
-namespace Validator\Validators;
+namespace Hexlet\Validator\Validators;
 
 class ArrayValidator extends AValidator
 {
