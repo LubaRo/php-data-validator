@@ -67,6 +67,12 @@ class ArrayValidatorTest extends TestCase
         $this->assertFalse($ruleSet1->isValid([1, 2]));
         $this->assertFalse($ruleSet1->isValid([1, 2, 3, 4, 5, 6]));
 
+        $this->assertTrue($v->number()->positive()->isValid(null));
+        $this->assertTrue($v->array()->sizeof(2)->shape([
+            'name' => $v->string()->required(),
+            'age'  => $v->number()->positive()
+        ])->isValid(['name' => 'maya', 'age' => null]));
+
 //        $this->assertTrue($schema->sizeof(2)->isValid(['a', 'b']));
 //        $this->assertTrue($schema->isValid([13]));
     }

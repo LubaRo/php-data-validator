@@ -38,12 +38,7 @@ class ArrayValidator extends AValidator
             $result = true;
 
             foreach ($shape as $key => $schema) {
-                if (!isset($data[$key])) {
-                    $result = false;
-                    break;
-                }
-
-                $value = $data[$key];
+                $value = $data[$key] ?? null;
 
                 if (!$schema->isValid($value)) {
                     $result = false;
