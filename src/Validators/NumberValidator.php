@@ -4,9 +4,9 @@ namespace Validator\Validators;
 
 class NumberValidator extends AValidator
 {
-    public function __construct(array $rules = [])
+    public function __construct(array $rules = [], array $customRules = [])
     {
-        parent::__construct($rules);
+        parent::__construct($rules, $customRules);
 
         $this->rules[] = fn(mixed $data) => is_numeric($data) || is_null($data);
     }
