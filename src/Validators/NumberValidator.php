@@ -18,7 +18,7 @@ class NumberValidator extends AValidator
 
     public function positive(): self
     {
-        $rule = fn($num) => is_null($num) || $num >= 0;
+        $rule = fn($num) => is_null($num) || $num > 0;
 
         return $this->addRule($rule);
     }
