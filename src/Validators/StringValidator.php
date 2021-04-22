@@ -31,4 +31,13 @@ class StringValidator extends AValidator
 
         return $this->addRule($rule);
     }
+
+    public function addRule(callable $rule): static
+    {
+        $ruleSet = $this->getRules();
+        $ruleSet[] = $rule;
+        $this->rules = $ruleSet;
+
+        return new static($ruleSet, $this->getCustomRules());
+    }
 }
