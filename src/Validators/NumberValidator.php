@@ -11,7 +11,7 @@ class NumberValidator extends AValidator
 
     public function required(): self
     {
-        $rule = fn($num) => !is_null($num) && $num != 0;
+        $rule = fn($num) => !is_null($num);
 
         return $this->addRule($rule);
     }
