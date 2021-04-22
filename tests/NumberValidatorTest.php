@@ -12,7 +12,7 @@ class NumberValidatorTest extends TestCase
         $v = new Validator();
         $schema = $v->number();
 
-        $this->assertTrue($schema->isValid(0));
+        $this->assertFalse($schema->isValid(0));
         $this->assertFalse($schema->positive()->isValid(0));
         $this->assertTrue($schema->isValid(null), 'NULL value is valid');
         $this->assertFalse($schema->isValid(''), 'String is not a number');
@@ -33,7 +33,7 @@ class NumberValidatorTest extends TestCase
 
         $this->assertTrue($schema->isValid(432), 'Int value is valid');
         $this->assertTrue($schema->isValid(43.232), 'Float value is valid');
-        $this->assertTrue($schema->isValid(0), 'Zero value is valid');
+        $this->assertFalse($schema->isValid(0), 'Zero value is valid');
         $this->assertTrue($schema->isValid(-32), 'Negative number is valid');
 
         $this->assertFalse($schema->isValid(null), 'NULL is not valid');
