@@ -3,7 +3,7 @@
 namespace Validator\Tests;
 
 use PHPUnit\Framework\TestCase;
-use Hexlet\Validator\Validator;
+use LubaRo\PhpValidator\Validator;
 
 class NumberValidatorTest extends TestCase
 {

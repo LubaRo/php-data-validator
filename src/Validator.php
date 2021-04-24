@@ -1,11 +1,11 @@
 <?php
 
-namespace Hexlet\Validator;
+namespace LubaRo\PhpValidator;
 
-use Hexlet\Validator\Validators\AValidator;
-use Hexlet\Validator\Validators\StringValidator;
-use Hexlet\Validator\Validators\NumberValidator;
-use Hexlet\Validator\Validators\ArrayValidator;
+use LubaRo\PhpValidator\Validators\AValidator;
+use LubaRo\PhpValidator\Validators\StringValidator;
+use LubaRo\PhpValidator\Validators\NumberValidator;
+use LubaRo\PhpValidator\Validators\ArrayValidator;
 
 class Validator
 {

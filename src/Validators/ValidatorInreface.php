@@ -1,6 +1,6 @@
 <?php
 
-namespace Hexlet\Validator\Validators;
+namespace LubaRo\PhpValidator\Validators;
 
 interface ValidatorInreface
 {

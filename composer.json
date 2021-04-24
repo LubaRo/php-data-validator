@@ -1,7 +1,7 @@
 {
-    "name": "hexlet/code",
+    "name": "lubaro/php-validator",
     "bin": ["bin/validator"],
-    "description": "PHP validator",
+    "description": "Validate strings, numbers and arrays according to predefined or custom defined rules.",
     "type": "library",
     "authors": [
         {
@@ -11,8 +11,8 @@
     ],
     "autoload": {
         "psr-4": {
-            "Hexlet\\Validator\\": "src",
-            "Hexlet\\Validator\\Validator\\Tests\\": "tests"
+            "LubaRo\\PhpValidator\\": "src",
+            "LubaRo\\PhpValidator\\Tests\\": "tests"
         }
     },
     "require": {
