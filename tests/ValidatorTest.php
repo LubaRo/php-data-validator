@@ -12,7 +12,6 @@ class ValidatorTest extends TestCase
         $v = new Validator();
 
         $fn = fn($value, $start) => str_starts_with($value, $start);
-
         $v->addValidator('string', 'startWith', $fn);
 
         $schema = $v->string()->test('startWith', 'H');
@@ -38,5 +37,16 @@ class ValidatorTest extends TestCase
         $this->expectExceptionMessage('Unknown validator type ' . $type);
 
         $v->addValidator($type, 'wrong', $fn);
+    }
+
+    public function testStatelessOfValidator(): void
+    {
+        $v = new Validator();
+        $stringValidator = $v->string();
+
+        $newStringValidator = $stringValidator->required();
+
+        $this->assertTrue($stringValidator->isValid(''));
+        $this->assertFalse($newStringValidator->isValid(''));
     }
 }

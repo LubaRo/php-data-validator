@@ -37,7 +37,6 @@ abstract class AValidator implements IValidator
     {
         $ruleSet = $this->getRules();
         $ruleSet[] = $rule;
-        $this->rules = $ruleSet;
 
         return new static($ruleSet, $this->getCustomRules());
     }

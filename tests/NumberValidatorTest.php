@@ -85,10 +85,10 @@ class NumberValidatorTest extends TestCase
         $this->assertFalse($schema->isValid(0), 'Not Valid number');
         $this->assertTrue($schema->isValid(40), 'Valid number');
 
-//        $numValidator->range(-35, 40);
-//        $this->assertTrue($numValidator->isValid(150));
-//
-//        $numValidator->required();
-//        $this->assertTrue($numValidator->isValid(null));
+        $numValidator->range(-35, 40);
+        $this->assertTrue($numValidator->isValid(150));
+
+        $numValidator->required();
+        $this->assertTrue($numValidator->isValid(null));
     }
 }

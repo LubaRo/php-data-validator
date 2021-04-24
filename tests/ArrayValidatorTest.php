@@ -73,8 +73,8 @@ class ArrayValidatorTest extends TestCase
             'age'  => $v->number()->positive()
         ])->isValid(['name' => 'maya', 'age' => null]));
 
-//        $this->assertTrue($schema->sizeof(2)->isValid(['a', 'b']));
-//        $this->assertTrue($schema->isValid([13]));
+        $this->assertTrue($schema->sizeof(2)->isValid(['a', 'b']));
+        $this->assertTrue($schema->isValid([13]));
     }
 
     public function testShape(): void
