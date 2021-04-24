@@ -70,9 +70,19 @@ You can add own rules to any type of validators
 ```php
 $v = new LubaRo\PhpValidator\Validator();
 
+// in custom function first parameter is a validating value
+// other parameters come after
+// for custom functions number of parameters is not restricted
 $fn = fn($checkedNumber, $param1) => $checkedNumber < $param1;
 
+// addValidator(validatorName, customFunctionName, function);
 $v->addValidator('number', 'isLessThan', $fn);
 
-$schema = $v->number()->required()->test('isLessThan', 15);
+// apply custom function using test(customFuncName, ...params)
+$lessThan15 = $v->number()->required()->test('isLessThan', 15);
+
+$lessThan15->isValid(5);  // => true 
+$lessThan15->isValid(25); // => false 
+
+
 ```
