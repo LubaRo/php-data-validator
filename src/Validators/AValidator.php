@@ -2,7 +2,7 @@
 
 namespace LubaRo\PhpValidator\Validators;
 
-abstract class AValidator implements ValidatorInreface
+abstract class AValidator implements IValidator
 {
     protected array $rules;
     protected array $customRules;
@@ -12,6 +12,8 @@ abstract class AValidator implements ValidatorInreface
         $this->rules = $rules;
         $this->customRules = $customRules;
     }
+
+    abstract protected function basicCheck(): callable;
 
     public function isValid(mixed $data): bool
     {
@@ -31,7 +33,7 @@ abstract class AValidator implements ValidatorInreface
         return $result;
     }
 
-    public function addRule(callable $rule): static
+    protected function addRule(callable $rule): static
     {
         $ruleSet = $this->getRules();
         $ruleSet[] = $rule;
@@ -50,7 +52,7 @@ abstract class AValidator implements ValidatorInreface
         return $this->customRules;
     }
 
-    protected function getCustomRule(string $name): ?callable
+    protected function getCustomRuleByName(string $name): ?callable
     {
         $customRules = $this->getCustomRules();
 
@@ -59,7 +61,7 @@ abstract class AValidator implements ValidatorInreface
 
     public function test(string $methodName, mixed ...$params): static
     {
-        $method = $this->getCustomRule($methodName);
+        $method = $this->getCustomRuleByName($methodName);
 
         if ($method === null) {
             throw new \Exception('Trying to call undefined method ' . $methodName);

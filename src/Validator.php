@@ -24,6 +24,13 @@ class Validator
         return new $className([], $customRules);
     }
 
+    protected function getCustomRulesByType(string $type): array
+    {
+        $rules = $this->customRules;
+
+        return $rules[$type] ?? [];
+    }
+
     public function string(): StringValidator
     {
         return $this->getValidator('string');
@@ -37,13 +44,6 @@ class Validator
     public function array(): ArrayValidator
     {
         return $this->getValidator('array');
-    }
-
-    protected function getCustomRulesByType(string $type): array
-    {
-        $rules = $this->customRules;
-
-        return $rules[$type] ?? [];
     }
 
     public function addValidator(string $type, string $name, callable $fn): void

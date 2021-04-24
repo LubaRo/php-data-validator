@@ -4,7 +4,7 @@ namespace LubaRo\PhpValidator\Validators;
 
 class NumberValidator extends AValidator
 {
-    public function basicCheck(): callable
+    protected function basicCheck(): callable
     {
         return fn(mixed $data) => (is_numeric($data) && $data != 0) || is_null($data);
     }

@@ -6,7 +6,7 @@ use function Symfony\Component\String\u;
 
 class StringValidator extends AValidator
 {
-    public function basicCheck(): callable
+    protected function basicCheck(): callable
     {
         return fn(mixed $data) => is_string($data);
     }

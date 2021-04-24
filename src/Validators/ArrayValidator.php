@@ -4,7 +4,7 @@ namespace LubaRo\PhpValidator\Validators;
 
 class ArrayValidator extends AValidator
 {
-    public function basicCheck(): callable
+    protected function basicCheck(): callable
     {
         return fn(mixed $data) => is_array($data) || is_null($data);
     }
