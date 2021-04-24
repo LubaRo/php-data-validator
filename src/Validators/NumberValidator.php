@@ -6,7 +6,7 @@ class NumberValidator extends AValidator
 {
     protected function basicCheck(): callable
     {
-        return fn(mixed $data) => (is_numeric($data) && $data != 0) || is_null($data);
+        return fn(mixed $data) => is_numeric($data) || is_null($data);
     }
 
     public function required(): self
