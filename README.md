@@ -4,6 +4,10 @@
 
 Validate strings, numbers and arrays according to predefined or custom defined rules.
 
+### Installation
+
+`composer require lubaro/php-validator`
+
 ### Validating strings
 ___
 
