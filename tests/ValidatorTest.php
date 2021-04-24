@@ -26,4 +26,17 @@ class ValidatorTest extends TestCase
         $this->assertFalse($schema->isValid(4));
         $this->assertTrue($schema->isValid(6));
     }
+
+    public function testUnknownValidatorTypeForCustomRule(): void
+    {
+        $type = 'float';
+        $fn = fn($value) => is_float($value);
+
+        $v = new Validator();
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Unknown validator type ' . $type);
+
+        $v->addValidator($type, 'wrong', $fn);
+    }
 }

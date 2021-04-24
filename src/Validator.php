@@ -2,7 +2,6 @@
 
 namespace LubaRo\PhpValidator;
 
-use LubaRo\PhpValidator\Validators\AValidator;
 use LubaRo\PhpValidator\Validators\StringValidator;
 use LubaRo\PhpValidator\Validators\NumberValidator;
 use LubaRo\PhpValidator\Validators\ArrayValidator;
@@ -14,6 +13,7 @@ class Validator
         'number' => NumberValidator::class,
         'array'  => ArrayValidator::class
     ];
+
     protected array $customRules = [];
 
     protected function getValidator(string $type): mixed
@@ -48,6 +48,10 @@ class Validator
 
     public function addValidator(string $type, string $name, callable $fn): void
     {
+        if (!array_key_exists($type, static::VALIDATORS)) {
+            throw new \Exception('Unknown validator type ' . $type);
+        }
+
         $customRules = $this->customRules;
         $customRules[$type][$name] = $fn;
 
