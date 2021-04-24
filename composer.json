@@ -3,6 +3,7 @@
     "bin": ["bin/validator"],
     "description": "Validate strings, numbers and arrays according to predefined or custom defined rules.",
     "type": "library",
+    "license": "MIT",
     "authors": [
         {
             "name": "lubaro",
