@@ -16,6 +16,7 @@
         }
     },
     "require": {
+        "php": ">=8.0",
         "phpstan/phpstan": "^0.12.83",
         "symfony/string": "^5.2"
     },
