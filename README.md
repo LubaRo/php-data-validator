@@ -65,7 +65,7 @@ $arrayShape->isValid(['name' => 'Gary', 'age' => -1800]); // => false
 
 ### Custom defined rules
 ___
-You can add own rules to any type of validators
+You can add own rules to any type of validators such as string, number or array
 
 ```php
 $v = new LubaRo\PhpValidator\Validator();
