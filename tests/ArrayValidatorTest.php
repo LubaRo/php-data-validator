@@ -4,113 +4,111 @@ namespace Validator\Tests;
 
 use PHPUnit\Framework\TestCase;
 use LubaRo\PhpValidator\Validator;
+use LubaRo\PhpValidator\Validators\ArrayValidator;
 
 class ArrayValidatorTest extends TestCase
 {
-    public function testInitState(): void
+    /**
+     * @dataProvider initStateDataProvider
+     * @dataProvider requiredRuleDataProvider
+     * @dataProvider sizeofRuleDataProvider
+     * @dataProvider multipleRulesDataProvider
+     */
+    public function testNumberValidator(ArrayValidator $schema, mixed $value, bool $expected): void
     {
-        $v = new Validator();
-        $schema = $v->array();
-
-        $this->assertTrue($schema->isValid(null), 'Null value is valid');
-        $this->assertTrue($schema->isValid([]), 'Empty array is valid');
-        $this->assertTrue($schema->isValid(['x' => 1, 'y' => 3]), 'Associative array is valid');
-        $this->assertTrue($schema->isValid([223, 'a', []]), 'Indexed array is valid');
-
-        $this->assertFalse($schema->isValid(444), 'Numeric value is valid');
+        $this->assertSame($expected, $schema->isValid($value));
     }
 
-    public function testRequired(): void
+    public function initStateDataProvider(): array
     {
-        $v = new Validator();
+        $schema = (new Validator())->array();
 
-        $schema = $v->array()->required();
-
-        $this->assertFalse($schema->isValid(null), 'Null value is not valid');
-
-        $this->assertTrue($schema->isValid([]), 'Empty array is valid');
-        $this->assertTrue($schema->isValid(['x' => 1, 'y' => 3]), 'Associative array is valid');
-        $this->assertTrue($schema->isValid([223, 'a', []]), 'Indexed array is valid');
+        return [
+            'init: indexed array' => [$schema, [223, 'a', []], true],
+            'init: associative array' => [$schema, ['x' => 1, 'y' => 3], true],
+            'init: empty array' => [$schema, [], true],
+            'init: null is valid empty value' => [$schema, null, true],
+            'init: number is not an array' => [$schema, 245, false],
+        ];
     }
 
-    public function testSizeof(): void
+    public function requiredRuleDataProvider(): array
     {
-        $v = new Validator();
+        $schema = (new Validator())->array()->required();
 
-        $schema = $v->array()->sizeof(4);
-
-        $this->assertTrue(
-            $schema->isValid(['x' => 1, 'y' => 3, 'a' => 'afd', 'some' => 'qwerty']),
-            'Associative array with 4 elems is valid'
-        );
-        $this->assertTrue(
-            $schema->isValid([223, 'a', ['g' => 444], 32.23]),
-            'Indexed array with 4 elems is valid'
-        );
-
-        $this->assertFalse($schema->isValid(null), 'Null value is not valid');
-        $this->assertFalse($schema->isValid([]), 'Empty array is not valid');
-        $this->assertFalse($schema->isValid([1, 5, 514, 'fasfd', 544]), 'The number of elements is greater');
-        $this->assertFalse($schema->isValid(['a' => 'only one']), 'The number of elements is less');
+        return [
+            'required: empty array is valid' => [$schema, [], true],
+            'required: associative array is valid' => [$schema, ['x' => 1, 'y' => 3], true],
+            'required: indexed array is valid' => [$schema, [223, 'a', []], true],
+            'required: null is not valid' => [$schema, null, false],
+        ];
     }
 
-    public function testMultipleRules(): void
+    public function sizeofRuleDataProvider(): array
+    {
+        $schema = (new Validator())->array()->sizeof(2);
+
+        return [
+            'sizeof: size is equal to required' => [$schema, ['x' => 1, 'y' => 3], true],
+            'sizeof: number of elems is less' => [$schema, [], false],
+            'sizeof: number of elems is greater' => [$schema, [1, 2, 3], false],
+        ];
+    }
+
+    public function shapeRuleDataProvider(): array
     {
         $v = new Validator();
 
-        $schema = $v->array();
-
-        $ruleSet1 = $schema->required()->sizeof(5);
-
-        $this->assertTrue($ruleSet1->isValid(['a', 1, 378, [], 'qwerty']));
-        $this->assertFalse($ruleSet1->isValid(null));
-        $this->assertFalse($ruleSet1->isValid([1, 2]));
-        $this->assertFalse($ruleSet1->isValid([1, 2, 3, 4, 5, 6]));
-
-        $this->assertTrue($v->number()->positive()->isValid(null));
-        $this->assertTrue($v->array()->sizeof(2)->shape([
+        $schema = $v->array()->shape([
+            'id'   => $v->number()->required()->positive(),
             'name' => $v->string()->required(),
             'age'  => $v->number()->positive()
-        ])->isValid(['name' => 'maya', 'age' => null]));
+        ]);
 
-        $this->assertTrue($schema->sizeof(2)->isValid(['a', 'b']));
-        $this->assertTrue($schema->isValid([13]));
+        return [
+            'shape: appropriate array shape' => [
+                $schema,
+                ['id'   => 24, 'name' => 'Peter', 'age'  => 27],
+                true
+            ],
+            'shape: one of required key is missing' => [
+                $schema,
+                ['id'   => 24, 'firstname' => 'Peter', 'age'  => 27],
+                false
+            ],
+            'shape: one of the elem is invalid' => [
+                $schema,
+                ['id'   => 24, 'firstname' => 'Peter', 'age'  => -27],
+                false
+            ],
+        ];
     }
 
-    public function testShape(): void
+    public function multipleRulesDataProvider(): array
     {
         $v = new Validator();
 
-        $schema = $v
-            ->array()
-            ->shape([
-                'id'   => $v->number()->required()->positive(),
-                'name' => $v->string()->required(),
-                'age'  => $v->number()->positive()
-            ]);
+        $schema = $v->array()->required()->sizeof(3)->shape([
+            'name' => $v->string()->required(),
+            'age'  => $v->number()->positive()
+        ]);
 
-        $this->assertTrue($schema->isValid([
-            'id'   => 24,
-            'name' => 'Peter',
-            'age'  => 27
-        ]));
-
-        $this->assertTrue($schema->isValid([
-            'id'   => 24,
-            'name' => 'Peter',
-            'age'  => 32
-        ]));
-
-        $this->assertFalse($schema->isValid([
-            'id'   => -5,
-            'name' => 'Peter',
-            'age'  => null
-        ]));
-
-        $this->assertFalse($schema->isValid([
-            'id'   => 2,
-            'name' => null,
-            'age'  => 12
-        ]));
+        return [
+            'multi: suits all rules' => [
+                $schema,
+                ['name' => 'Jenny', 'hobbies' => ['guitar', 'cooking'], 'age' => 32],
+                true
+            ],
+            'multi: violates nested rule' => [
+                $schema,
+                ['name' => 'Jenny', 'hobbies' => ['guitar', 'cooking'], 'age' => -32],
+                false
+            ],
+            'multi: violates one of the rules' => [
+                $schema,
+                ['name' => 'Jenny', 'hobbies' => ['guitar', 'cooking'], 'age' => 32, 'asdf'],
+                false
+            ],
+        ];
     }
 }

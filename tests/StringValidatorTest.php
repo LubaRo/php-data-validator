@@ -4,76 +4,87 @@ namespace Validator\Tests;
 
 use PHPUnit\Framework\TestCase;
 use LubaRo\PhpValidator\Validator;
+use LubaRo\PhpValidator\Validators\StringValidator;
 
 class StringValidatorTest extends TestCase
 {
-    public function testInitState(): void
+    /**
+     * @dataProvider initStateDataProvider
+     * @dataProvider requiredRuleDataProvider
+     * @dataProvider minLengthRuleDataProvider
+     * @dataProvider containsRuleDataProvider
+     * @dataProvider multipleRulesDataProvider
+     */
+    public function testStringValidator(StringValidator $schema, mixed $value, bool $expected): void
     {
-        $v = new Validator();
-        $schema = $v->string();
-
-        $this->assertFalse($schema->isValid(null), 'NULL value is not valid');
-        $this->assertTrue($schema->isValid(''), 'Empty string check');
-        $this->assertTrue($schema->isValid('qwerty'), 'Ordinary string check');
-
-        $this->assertFalse($schema->isValid(455), 'Number type value check');
-
-        $this->assertTrue($schema->isValid('445'), 'String with number check');
-        $this->assertTrue($schema->isValid('null'), 'Null word check');
+        $this->assertSame($expected, $schema->isValid($value));
     }
 
-    public function testRequired(): void
+    public function initStateDataProvider(): array
     {
-        $v = new Validator();
+        $schema = (new Validator())->string();
 
-        $schema = $v->string()->required();
-
-        $this->assertFalse($schema->isValid(''), 'Empty string check');
-        $this->assertTrue($schema->isValid('h'), 'Single char check');
-        $this->assertTrue($schema->isValid('simple words'), 'Ordinary string check');
+        return [
+            'init: empty string'    => [$schema, '', true],
+            'init: ordinary string' => [$schema, 'qwerty', true],
+            'init: null is not a string' => [$schema, null, false],
+            'init: number is not a string' => [$schema, 455, false],
+        ];
     }
 
-    public function testMinLength(): void
+    public function requiredRuleDataProvider(): array
     {
-        $v = new Validator();
+        $schema = (new Validator())->string()->required();
 
-        $schema = $v->string()->minLength(5);
-
-        $this->assertFalse($schema->isValid(''), 'Empty string check');
-        $this->assertFalse($schema->isValid('abcd'), 'Length is shorter than needed');
-        $this->assertTrue($schema->isValid('abcde'), 'Equal to minLength string check');
-        $this->assertTrue(
-            $schema->isValid('The quick brown fox jumps over the lazy dog'),
-            'Greater than minLength string check'
-        );
+        return [
+            'required: single char'     => [$schema, 'y', true],
+            'required: ordinary string' => [$schema, 'simple words', true],
+            'required: empty string'    => [$schema, '', false],
+        ];
     }
 
-    public function testContains(): void
+    public function minLengthRuleDataProvider(): array
     {
-        $v = new Validator();
+        $stringValidator = (new Validator())->string();
+        $getScheme = fn($minLength) => $stringValidator->minLength($minLength);
 
-        $schema = $v->string()->contains('some');
-
-        $this->assertTrue($schema->isValid('The some string'), 'Contains check');
-        $this->assertFalse($schema->isValid(''), 'Empty string check');
-        $this->assertFalse($schema->isValid('abcde'), 'String does not contains the substr');
+        return [
+            'minLength: length is equal to min'        => [$getScheme(8), 'lazy fox', true],
+            'minLength: length is greater than min'    => [$getScheme(5), 'lazy fox', true],
+            'minLength: zero length'                   => [$getScheme(0), 'asdf', true],
+            'minLength: zero length with empty string' => [$getScheme(0), '', true],
+            'minLength: length is not enough'          => [$getScheme(20), 'lazy fox', false],
+        ];
     }
 
-    public function testMultipleRules(): void
+    public function containsRuleDataProvider(): array
     {
-        $v = new Validator();
+        $stringValidator = (new Validator())->string();
+        $getScheme = fn($substr) => $stringValidator->contains($substr);
 
-        $schema = $v->string()
+        return [
+            'contains: string contains the substr' => [
+                $getScheme('some'), 'The some string', true
+            ],
+            'contains: string does not contains the substr' => [
+                $getScheme('cat'), 'brown fox jumps over the lazy dog', false
+            ],
+        ];
+    }
+
+    public function multipleRulesDataProvider(): array
+    {
+        $schema = (new Validator())->string()
             ->minLength(3)
             ->required()
             ->contains('ze');
 
-        $this->assertFalse($schema->isValid('ze'), 'Not enough length');
-        $this->assertFalse($schema->isValid('a'), 'Not enough length');
-        $this->assertFalse($schema->isValid(''), 'Empty string check');
-        $this->assertFalse($schema->isValid('fke'), 'Length is equal to min without needed substr');
-
-        $this->assertTrue($schema->isValid('aze'), 'Length is equal to min with required substr');
-        $this->assertTrue($schema->isValid('aze fl;as'), 'Length is greater than min with required substr');
+        return [
+            'multi: all rules passes1' => [$schema, 'aze', true],
+            'multi: all rules passes2' => [$schema, 'lkds aze sw', true],
+            'multi: length does not match' => [$schema, 'ze', false],
+            'multi: does not contains the substr' => [$schema, 'qwerty asdfg', false],
+            'multi: string required' => [$schema, '', false],
+        ];
     }
 }

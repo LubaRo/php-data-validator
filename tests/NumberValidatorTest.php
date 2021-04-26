@@ -4,92 +4,86 @@ namespace Validator\Tests;
 
 use PHPUnit\Framework\TestCase;
 use LubaRo\PhpValidator\Validator;
+use LubaRo\PhpValidator\Validators\NumberValidator;
 
 class NumberValidatorTest extends TestCase
 {
-    public function testInitState(): void
+    /**
+     * @dataProvider initStateDataProvider
+     * @dataProvider requiredRuleDataProvider
+     * @dataProvider positiveRuleDataProvider
+     * @dataProvider rangeRuleDataProvider
+     * @dataProvider multipleRulesDataProvider
+     */
+    public function testNumberValidator(NumberValidator $schema, mixed $value, bool $expected): void
     {
-        $v = new Validator();
-        $schema = $v->number();
-
-        $this->assertTrue($schema->isValid(0));
-
-        $this->assertTrue($schema->isValid(null), 'NULL value is valid');
-        $this->assertFalse($schema->isValid(''), 'String is not a number');
-        $this->assertFalse($schema->isValid('4kl'), 'String is not a number');
-
-        $this->assertTrue($schema->isValid('543'), 'String with number is valid');
-        $this->assertTrue($schema->isValid('54.3'), 'String with float is valid');
-
-        $this->assertTrue($schema->isValid(543), 'Integer is valid');
-        $this->assertTrue($schema->isValid(34.12), 'Float is valid');
+        $this->assertSame($expected, $schema->isValid($value));
     }
 
-    public function testRequired(): void
+    public function initStateDataProvider(): array
     {
-        $v = new Validator();
+        $schema = (new Validator())->number();
 
-        $schema = $v->number()->required();
-
-        $this->assertTrue($schema->isValid(432), 'Int value is valid');
-        $this->assertTrue($schema->isValid(43.232), 'Float value is valid');
-
-        $this->assertTrue($schema->isValid(0), 'Zero value is valid');
-        $this->assertTrue($schema->isValid(-32), 'Negative number is valid');
-
-        $this->assertFalse($schema->isValid(null), 'NULL is not valid');
+        return [
+            'init: zero is valid number' => [$schema, 0, true],
+            'init: negative num is valid' => [$schema, -42, true],
+            'init: positive num is valid' => [$schema, 34.12, true],
+            'init: float is valid' => [$schema, 25, true],
+            'init: null is valid empty value' => [$schema, null, true],
+            'init: string only with number' => [$schema, '436', true],
+            'init: string only with float' => [$schema, '43.6', true],
+            'init: string with num and chars' => [$schema, '43a', false],
+            'init: empty string' => [$schema, '', false],
+        ];
     }
 
-    public function testPositive(): void
+    public function requiredRuleDataProvider(): array
     {
-        $v = new Validator();
+        $schema = (new Validator())->number()->required();
 
-        $schema = $v->number()->positive();
-
-        $this->assertTrue($schema->isValid(432), 'Int positive value is valid');
-        $this->assertTrue($schema->isValid(43.232), 'Float positive value is valid');
-        $this->assertFalse($schema->isValid(0), 'Zero value is not valid');
-
-        $this->assertTrue($schema->isValid(null), 'NULL is valid');
-        $this->assertFalse($schema->isValid(-32), 'Negative int is not valid');
-        $this->assertFalse($schema->isValid(-423.12), 'Negative float is not valid');
+        return [
+            'required: positive number' => [$schema, 234, true],
+            'required: negative number' => [$schema, -43.2, true],
+            'required: zero value' => [$schema, 0, true],
+            'require: null is not valid' => [$schema, null, false],
+        ];
     }
 
-    public function testRange(): void
+    public function positiveRuleDataProvider(): array
     {
-        $v = new Validator();
+        $schema = (new Validator())->number()->positive();
 
-        $schema = $v->number()->range(-5, 4);
-
-        $this->assertTrue($schema->isValid(2), 'Range value value is valid');
-        $this->assertTrue($schema->isValid(0.75), 'Float range value value is valid');
-        $this->assertTrue($schema->isValid(-5), 'Bottom bound is valid');
-        $this->assertTrue($schema->isValid(4), 'Upper bound is valid');
-
-        $this->assertFalse($schema->isValid(null), 'NULL is not valid');
-        $this->assertFalse($schema->isValid(-6.3), 'Less than the lower bound');
-        $this->assertFalse($schema->isValid(43), 'Greater than the upper bound');
+        return [
+            'positive: int value' => [$schema, 905, true],
+            'positive: float value' => [$schema, 23.342, true],
+            'positive: zero is not valid' => [$schema, 0, false],
+            'positive: negative is not valid' => [$schema, -32, false],
+        ];
     }
 
-    public function testMultipleRules(): void
+    public function rangeRuleDataProvider(): array
     {
-        $v = new Validator();
+        $schema = (new Validator())->number()->range(-5, 4);
 
-        $numValidator = $v->number();
-        $schema = $numValidator->required()->range(-35, 40)->positive();
+        return [
+            'range: int value inside range' => [$schema, 2, true],
+            'range: float value inside range' => [$schema, 0.75, true],
+            'range: bottom bound' => [$schema, -5, true],
+            'range: upper bound' => [$schema, 4, true],
+            'range: less than the bottom bound' => [$schema, -6, false],
+            'range: greater than the upper bound' => [$schema, 5, false],
+        ];
+    }
 
-        $this->assertTrue($v->number()->positive()->isValid(null));
-        $this->assertFalse($schema->isValid(null), 'Number must exists');
-        $this->assertFalse($schema->isValid(-20), 'Number must be positive');
-        $this->assertFalse($schema->isValid(46), 'Number out of the range');
+    public function multipleRulesDataProvider(): array
+    {
+        $schema = (new Validator())->number()->required()->range(-35, 40)->positive();
 
-        $this->assertFalse($schema->isValid(0), 'Zero is not positive');
-        $this->assertTrue($schema->isValid(40), 'Valid number');
-
-        $numValidator->range(-35, 40);
-        $this->assertTrue($numValidator->isValid(150));
-
-        $numValidator->required();
-        $this->assertTrue($numValidator->isValid(null));
+        return [
+            'multi: all rules passes' => [$schema, 40, true],
+            'multi: positive rule violated' => [$schema, -5, false],
+            'multi: out of the range' => [$schema, 105, false],
+            'multi: required rule violated' => [$schema, null, false],
+        ];
     }
 }
